@@ -217,7 +217,15 @@
     </div>
     <main class="container">
       <div class="bg-body-tertiary p-5 rounded mt-3">
-        
+        <h1>Nueva apuesta</h1>
+        <label>Usuario: </label>
+        <input id="cajausuario" type="text" class="form-control"/>
+        <label>Resultado: </label>
+        <input type="text" id="cajaresultado" class="form-control">
+        <label for="">Fecha:</label>
+        <input type="text" class="form-control" id="cajafecha"><br>
+        <button id="botoncrear" class="btn btn-primary">Nueva apuesta</button>
+      </div>
     </main>
         <nav class="navbar fixed-bottom navbar-expand-sm navbar-dark bg-dark">
       <div class="container-fluid">
@@ -261,9 +269,9 @@
     <script src="js/jquery-3.7.1.js"></script>
     <script>
         $(document).ready(function(){
-            let params = new window.URLSearchParams(window.location.search);
-            let idjugador = params.get("idjugador");
-            loadJugador(idjugador);
+            $("#botoncrear").click(function(){
+                crearApuesta();
+            })
             loadEquipos();
         })
 
@@ -280,28 +288,29 @@
             })
         }
 
-        function loadJugador(id){
-            let request = "api/Jugadores/" + id;
-            $.getJSON(url + request, function(data){
-                console.log(data)
-                let html = "";
-                html += `
-                    <h1 class="text-center">${data.nombre}</h1>
-                    <div class="d-flex justify-content-center">
-                        <div class="card" style="width: 18rem;">
-                            <img src=${data.imagen} class="card-img-top" alt=${data.nombre}>
-                            <div class="card-body">
-                                <h5 class="card-title">${data.posicion}</h5>
-                                <p class="card-text">Fecha nacimiento: ${data.fechaNacimiento}</p>
-                                <p class="card-text">Pais: ${data.pais}</p>
-                                <a href="jugadores.html?idequipo=${data.idEquipo}" class="btn btn-success">Jugadores</a>
-                            </div>
-                        </div>
-                    </div>
-                `;
-                $(".bg-body-tertiary").html(html)
+        function crearApuesta(){
+            let request = "api/Apuestas";
+            let apuesta = {
+                usuario: $("#cajausuario").val(),
+                resultado: $("#cajaresultado").val(),
+                fecha: $("#cajafecha").val(),
+            }
+            $.ajax({
+                url: url + request,
+                type: "POST",
+                contentType: "application/json",
+                data: JSON.stringify(apuesta),
+                success: function(){
+                    Swal.fire({
+                        icon: 'success',
+                        title: 'Apuesta realizada correctamente',
+                        timer: 3000,
+                        timerProgressBar: true
+                    }).then(()=>{
+                        window.location.href= "apuestas.html"
+                    })
+                }
             })
-
         }
 
 
